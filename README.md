@@ -27,8 +27,6 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 - **Leonardo Pires Ferreira** 
 - **Letícia Souza de Missena**
 - **Carlos Marcelo de Lira Dowsley Neto**
-- **
+- **Rafael Antonio Silva Moreira da Costa**
 
-
-- (Outros autores, se houver)  
 
