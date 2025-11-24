@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScholarTube - Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/globals.css">
+    <link rel="stylesheet" href="assets/css/login.css" />
+</head>
+<body>
+    <div class="page">
+        <div class="browser-bar"></div>
+
+        <div class="container">
+            <div class="logo-area">
+                <img src="/assets/img/logo.jpg" alt="Logo" class="logo-img" />
+            </div>
+
+            <div class="form-box">
+                <label for="usuario" class="label-text">Insira o nome do usuário</label>
+                <input type="text" id="usuario" class="input-field" placeholder="Usuário" />
+
+                <label for="senha" class="label-text">Digite sua senha</label>
+                <div class="password-wrapper">
+                    <input type="password" id="senha" class="input-field" placeholder="Senha" />
+                    <span id="toggleSenha" class="toggle">👁️</span>
+                </div>
+
+                <a href="#" class="forgot">Esqueceu sua senha?</a>
+
+                <button id="entrarBtn" class="btn">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const senha = document.getElementById("senha");
+        const toggleSenha = document.getElementById("toggleSenha");
+        const entrarBtn = document.getElementById("entrarBtn");
+        const usuario = document.getElementById("usuario");
+
+        toggleSenha.addEventListener("click", () => {
+            senha.type = senha.type === "password" ? "text" : "password";
+        });
+
+        entrarBtn.addEventListener("click", () => {
+            if (usuario.value === "" || senha.value === "") {
+                alert("Preencha todos os campos.");
+            } else {
+                window.location.href = "home.html";
+            }
+        });
+    </script>
+</body>
+</html>
