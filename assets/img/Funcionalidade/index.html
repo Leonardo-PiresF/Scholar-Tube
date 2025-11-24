@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScholarTube - Conteúdo Acadêmico em Vídeo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ícones Lucide para botões e UI -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* CSS Customizado para o tema ScholarTube */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F9FB;
+        }
+
+
+        /* Cores Temáticas */
+        .bg-primary-gold { background-color: #B8860B; }
+        .text-primary-gold { color: #B8860B; }
+        .border-primary-gold { border-color: #B8860B; }
+        .bg-secondary-dark { background-color: #001F3F; }
+        .text-secondary-dark { color: #001F3F; }
+       
+        /* Efeitos de Hover para Botões Principais */
+        .btn-gold:hover {
+            background-color: #a57c09; /* Um dourado um pouco mais escuro */
+        }
+
+
+        /* Estilo para a Carta de Vídeo (Responsividade e Sombra) */
+        .video-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            @apply shadow-lg rounded-xl overflow-hidden bg-white;
+        }
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(184, 134, 11, 0.1), 0 4px 6px -4px rgba(184, 134, 11, 0.05);
+        }
+
+
+        /* Fundo escuro do modal */
+        #login-modal-overlay {
+            background-color: rgba(0, 31, 63, 0.8); /* Azul escuro semi-transparente */
+            transition: opacity 0.3s ease;
+        }
+    </style>
+    <!-- Configuração do Tailwind para Cores Customizadas -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-gold': '#B8860B',
+                        'secondary-dark': '#001F3F',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen">
+
+
+    <!-- CABEÇALHO (Header) -->
+    <header class="bg-secondary-dark text-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <!-- Logo ScholarTube -->
+            <a href="index.html" class="text-2xl font-bold flex items-center">
+                <span class="text-primary-gold mr-2">
+                    <!-- Icone representando o logo (Chama e Coluna) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.43 11v6a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-6"/><path d="M15.5 11.5L12 14L8.5 11.5L12 9L15.5 11.5Z"/><path d="M12 4L4 8L12 12L20 8L12 4Z"/></svg>
+                </span>
+                ScholarTube
+            </a>
+
+
+            <!-- Navegação e Botões -->
+            <nav class="flex items-center space-x-4">
+                <!-- Links (Ajuste para navegação mobile/desktop) -->
+                <a href="search.html" class="hidden sm:block text-gray-300 hover:text-primary-gold font-medium">Buscar</a>
+                <a href="watch.html" class="hidden sm:block text-gray-300 hover:text-primary-gold font-medium">Meu Canal</a>
+               
+                <!-- Botão de Login (Interatividade JS) -->
+                <button id="open-login-modal"
+                        class="btn-gold bg-primary-gold text-secondary-dark font-bold py-2 px-4 rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                    Login / Cadastro
+                </button>
+               
+                <!-- Menu hamburguer para mobile -->
+                <button class="sm:hidden text-white hover:text-primary-gold">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu"><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+
+        <!-- Banner de Destaque -->
+        <section class="mb-10 bg-secondary-dark text-white rounded-xl p-6 md:p-10 shadow-xl">
+            <h2 class="text-3xl md:text-5xl font-extrabold mb-3 text-primary-gold">
+                Conhecimento Sem Limites
+            </h2>
+            <p class="text-xl md:text-2xl font-light mb-6">
+                Assista às aulas e pesquisas mais relevantes das melhores universidades.
+            </p>
+            <a href="search.html"
+               class="inline-flex items-center btn-gold bg-primary-gold text-secondary-dark font-bold py-3 px-6 rounded-lg transition duration-200">
+                <span class="mr-2">Comece a Explorar</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </a>
+        </section>
+
+
+        <!-- Seção: Vídeos em Destaque (Simulação de Carrossel/Grid) -->
+        <section class="mb-12">
+            <h3 class="text-3xl font-bold text-secondary-dark mb-6 border-b-4 border-primary-gold inline-block pb-1">
+                Vídeos Populares
+            </h3>
+           
+            <div id="featured-videos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards de Vídeo serão injetados aqui -->
+            </div>
+        </section>
+
+
+        <!-- Seção: Nossos Canais (Categorias) -->
+        <section class="mb-12">
+            <h3 class="text-3xl font-bold text-secondary-dark mb-6 border-b-4 border-primary-gold inline-block pb-1">
+                Explore por Disciplina
+            </h3>
+           
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <!-- Card de Categoria -->
+                <div class="bg-white p-4 rounded-xl shadow-md text-center hover:bg-gray-100 transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-flask-conical mx-auto mb-2"><path d="M10 16.5L14 16.5"/><path d="M18 8L18 8.01"/><path d="M6 8L6 8.01"/><path d="M10.5 8.5L13.5 8.5"/><path d="M12 4.5L12 1.5"/><path d="M12 14.5L12 16.5"/><path d="M12 1.5L8 16.5H16L12 1.5Z"/></svg>
+                    <p class="font-semibold text-secondary-dark">Ciências Exatas</p>
+                </div>
+                <!-- Outros Cards de Categoria -->
+                <div class="bg-white p-4 rounded-xl shadow-md text-center hover:bg-gray-100 transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scale mx-auto mb-2"><path d="M14 9V5a2 2 0 0 0-2-2L9.5 4.5"/><path d="M16 10v4a2 2 0 0 0 2 2h3"/><path d="M15 15v5a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-5"/><path d="M4 16v-4a2 2 0 0 1 2-2h4"/></svg>
+                    <p class="font-semibold text-secondary-dark">Direito</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md text-center hover:bg-gray-100 transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-2 mx-auto mb-2"><path d="M14 19a6 6 0 0 0-12 0"/><circle cx="8" cy="10" r="4"/><path d="M22 19a6 6 0 0 0-6-6h-2"/><circle cx="18" cy="10" r="4"/></svg>
+                    <p class="font-semibold text-secondary-dark">Humanas</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md text-center hover:bg-gray-100 transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-code-2 mx-auto mb-2"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+                    <p class="font-semibold text-secondary-dark">Tecnologia</p>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+
+    <!-- RODAPÉ (Footer) -->
+    <footer class="mt-12 py-8 bg-secondary-dark text-white">
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0 text-center md:text-left">
+                <p class="font-bold text-lg text-primary-gold mb-1">ScholarTube</p>
+                <p class="text-sm text-gray-400">Conteúdo Acadêmico | Educação de Qualidade</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="#" class="hover:text-primary-gold transition">Sobre</a>
+                <a href="#" class="hover:text-primary-gold transition">Termos de Uso</a>
+                <a href="#" class="hover:text-primary-gold transition">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- MODAL DE LOGIN/CADASTRO (Interatividade JS) -->
+    <div id="login-modal-overlay" class="fixed inset-0 hidden items-center justify-center z-50 opacity-0">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md m-4 p-6 transform transition-all duration-300 scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-2xl font-bold text-secondary-dark">Acessar ScholarTube</h3>
+                <button id="close-login-modal" class="text-gray-400 hover:text-secondary-dark transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                </button>
+            </div>
+           
+            <!-- Formulário de Login -->
+            <form id="login-form">
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail Institucional</label>
+                    <input type="email" id="email" required placeholder="seu.nome@universidade.edu"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-gold focus:border-primary-gold transition duration-150">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                    <input type="password" id="password" required placeholder="••••••••"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-gold focus:border-primary-gold transition duration-150">
+                </div>
+               
+                <button type="submit"
+                        class="btn-gold w-full bg-primary-gold text-secondary-dark font-bold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg">
+                    Entrar
+                </button>
+               
+                <p class="mt-4 text-center text-sm text-gray-500">
+                    Ainda não tem conta? <a href="#" class="text-primary-gold hover:underline font-semibold">Cadastre-se</a>
+                </p>
+            </form>
+
+
+            <!-- Mensagem de Sucesso/Erro (A ser mostrada pelo JS) -->
+            <div id="login-message" class="mt-4 p-3 rounded-lg text-center hidden" role="alert"></div>
+
+
+        </div>
+    </div>
+
+
+
+
+    <script>
+        // --- DADOS MOCKADOS para a lista de vídeos ---
+        const videoData = [
+            { id: 1, title: 'Revolução Industrial 4.0', channel: 'Engenharia Today', views: '15k', thumb: 'https://placehold.co/400x225/001F3F/B8860B?text=Engenharia' },
+            { id: 2, title: 'As Leis de Mercado', channel: 'Economia Fácil', views: '22k', thumb: 'https://placehold.co/400x225/001F3F/B8860B?text=Economia' },
+            { id: 3, title: 'Introdução à Lógica de Programação', channel: 'Code Scholars', views: '8k', thumb: 'https://placehold.co/400x225/001F3F/B8860B?text=Programação' },
+            { id: 4, title: 'A Crise Hídrica Global', channel: 'Geografia Atual', views: '11k', thumb: 'https://placehold.co/400x225/001F3F/B8860B?text=Geografia' },
+            { id: 5, title: 'Obras de Machado de Assis', channel: 'Literatura Clássica', views: '9k', thumb: 'https://placehold.co/400x225/001F3F/B8860B?text=História' },
+            { id: 6, title: 'Fundamentos de Python', channel: 'Code Scholars', views: '18k', thumb: 'https://placehold.co/400x225/001F3F/B8860B?text=Python', },
+        ];
+
+
+        // --- LÓGICA DE INTERATIVIDADE 1: Cards de Vídeo (Clique em Produto) ---
+
+
+        const featuredVideosContainer = document.getElementById('featured-videos');
+
+
+        function renderVideoCards() {
+            videoData.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <a href="watch.html?v=${video.id}">
+                        <img src="${video.thumb}"
+                             alt="Thumbnail do Vídeo: ${video.title}"
+                             class="w-full h-auto object-cover"
+                             onerror="this.onerror=null; this.src='https://placehold.co/400x225/001F3F/B8860B?text=Thumbnail+Indisponível';"
+                        >
+                    </a>
+                    <div class="p-4">
+                        <a href="watch.html?v=${video.id}" class="text-lg font-semibold text-secondary-dark hover:text-primary-gold line-clamp-2 transition">${video.title}</a>
+                        <p class="text-sm text-gray-600">${video.channel}</p>
+                        <p class="text-xs text-gray-500">${video.views} visualizações</p>
+                    </div>
+                `;
+                // Adiciona o card ao container
+                featuredVideosContainer.appendChild(card);
+            });
+        }
+
+
+        // --- LÓGICA DE INTERATIVIDADE 2: Modal de Login/Cadastro ---
+
+
+        const openLoginBtn = document.getElementById('open-login-modal');
+        const closeLoginBtn = document.getElementById('close-login-modal');
+        const modalOverlay = document.getElementById('login-modal-overlay');
+        const loginForm = document.getElementById('login-form');
+        const loginMessage = document.getElementById('login-message');
+
+
+        // Abre o Modal
+        openLoginBtn.addEventListener('click', () => {
+            modalOverlay.classList.remove('hidden');
+            // Animação de entrada
+            setTimeout(() => {
+                modalOverlay.classList.remove('opacity-0');
+                modalOverlay.querySelector('div').classList.remove('scale-95');
+                modalOverlay.querySelector('div').classList.add('scale-100');
+            }, 10);
+        });
+
+
+        // Fecha o Modal (usado também pelo overlay e botão 'X')
+        function closeModal() {
+            // Animação de saída
+            modalOverlay.classList.add('opacity-0');
+            modalOverlay.querySelector('div').classList.add('scale-95');
+            modalOverlay.querySelector('div').classList.remove('scale-100');
+           
+            setTimeout(() => {
+                modalOverlay.classList.add('hidden');
+                // Limpa a mensagem e o formulário
+                loginMessage.classList.add('hidden');
+                loginForm.reset();
+            }, 300);
+        }
+
+
+        closeLoginBtn.addEventListener('click', closeModal);
+       
+        // Fechar ao clicar fora (no overlay)
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+
+
+        // Submissão do Formulário de Login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+           
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+           
+            // Simulação de autenticação (apenas para demonstração)
+            if (email === "teste@scholartube.edu" && password === "12345") {
+                loginMessage.textContent = "Login bem-sucedido! Bem-vindo(a) de volta.";
+                loginMessage.className = "mt-4 p-3 rounded-lg text-center bg-green-100 text-green-700";
+            } else {
+                loginMessage.textContent = "Erro: E-mail ou senha incorretos. Tente novamente.";
+                loginMessage.className = "mt-4 p-3 rounded-lg text-center bg-red-100 text-red-700";
+            }
+            loginMessage.classList.remove('hidden');
+
+
+            // Em um projeto real, você faria uma requisição AJAX aqui.
+            // Para manter simples, o modal só mostra a mensagem e não fecha.
+            // Se o login fosse bem-sucedido, chamaríamos: setTimeout(closeModal, 1500);
+        });
+
+
+        // --- INICIALIZAÇÃO GERAL ---
+
+
+        // Renderiza os ícones Lucide
+        lucide.createIcons();
+
+
+        // Roda a renderização dos cards de vídeo ao carregar a página
+        window.onload = renderVideoCards;
+    </script>
+</body>
+</html>

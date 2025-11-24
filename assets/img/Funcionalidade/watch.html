@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistir Vídeo Acadêmico | ScholarTube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluindo Lucide Icons para os ícones vetoriais -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* CSS Customizado para o tema ScholarTube */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F9FB; /* Fundo suave */
+        }
+
+        /* Cores Temáticas */
+        .bg-primary-gold { background-color: #B8860B; }
+        .text-primary-gold { color: #B8860B; }
+        .border-primary-gold { border-color: #B8860B; }
+        .bg-secondary-dark { background-color: #001F3F; }
+        .text-secondary-dark { color: #001F3F; }
+        
+        /* Ajuste do player de vídeo responsivo (16:9 aspect ratio) */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.75rem; /* rounded-xl */
+        }
+
+        /* O elemento video agora é absoluto dentro do container */
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Efeito de hover para o card de sugestão */
+        .suggestion-card {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .suggestion-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        }
+
+    </style>
+    <!-- Configuração do Tailwind para Cores Customizadas -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-gold': '#B8860B', 
+                        'secondary-dark': '#001F3F',
+                    },
+                },
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen">
+
+    <!-- CABEÇALHO (Header) -->
+    <header class="bg-secondary-dark text-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <!-- Logo ScholarTube -->
+            <a href="index.html" class="text-2xl font-bold flex items-center">
+                <span class="text-primary-gold mr-2">
+                    <!-- Ícone de Capelo (Graduation Cap) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.43 11v6a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-6"/><path d="M15.5 11.5L12 14L8.5 11.5L12 9L15.5 11.5Z"/><path d="M12 4L4 8L12 12L20 8L12 4Z"/></svg>
+                </span>
+                ScholarTube
+            </a>
+
+            <!-- Navegação e Ação -->
+            <nav class="flex items-center space-x-4">
+                <a href="search.html" class="hidden sm:block text-gray-300 hover:text-primary-gold font-medium">Buscar</a>
+                
+                <!-- Botão principal "Home" -->
+                <a href="index.html" 
+                   class="bg-primary-gold text-secondary-dark font-semibold py-2 px-4 rounded-full hover:bg-yellow-600 transition duration-300 shadow-md">
+                    Home
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal: Player e Informações -->
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-8">
+
+        <!-- Coluna Esquerda: Vídeo e Descrição -->
+        <div class="lg:w-2/3">
+            <!-- 1. Player de Vídeo Responsivo (AGORA USANDO <VIDEO>) -->
+            <div class="video-container shadow-2xl mb-6 bg-secondary-dark">
+                <!-- 
+                    A tag <video> usa links diretos para arquivos de mídia. 
+                    'controls' exibe os controles nativos do player.
+                    'autoplay' tenta iniciar a reprodução.
+                    'poster' é a imagem de capa antes de o vídeo começar.
+                -->
+                <video 
+                    id="video-player"
+                    src="" 
+                    controls 
+                    autoplay 
+                    class="w-full h-full object-cover rounded-xl"
+                    poster="https://placehold.co/1280x720/001F3F/B8860B?text=V%C3%ADdeo+Carregando">
+                    Seu navegador não suporta a tag de vídeo HTML5.
+                </video>
+            </div>
+
+            <!-- 2. Título e Canal -->
+            <h1 id="video-title" class="text-3xl font-extrabold text-secondary-dark mb-2">
+                <!-- Título carregado via JS -->
+            </h1>
+            <div class="flex items-center justify-between border-b pb-4 mb-4">
+                <div class="flex items-center space-x-3">
+                    <!-- ID para manipulação via JS -->
+                    <div id="channel-initial" class="w-10 h-10 rounded-full bg-primary-gold flex items-center justify-center text-secondary-dark font-bold text-lg"></div>
+                    <div>
+                        <!-- ID para manipulação via JS -->
+                        <p id="channel-name" class="font-bold text-lg text-secondary-dark"></p>
+                        <!-- ID para manipulação via JS -->
+                        <p id="channel-subscribers" class="text-sm text-gray-500"></p>
+                    </div>
+                </div>
+                <!-- Botão de Inscrição com ID e classe inicial -->
+                <button id="subscribe-btn" class="bg-primary-gold text-secondary-dark font-semibold py-2 px-4 rounded-full hover:bg-yellow-600 transition duration-300">
+                    Inscrever-se
+                </button>
+            </div>
+
+            <!-- 3. Descrição e Metadados -->
+            <div class="bg-white p-5 rounded-xl shadow-md">
+                <div class="flex space-x-4 text-sm text-gray-600 mb-3">
+                    <!-- ID para manipulação via JS -->
+                    <span id="video-date" class="flex items-center">
+                        <!-- Data carregada via JS -->
+                    </span>
+                    <!-- ID para manipulação via JS -->
+                    <span id="video-views" class="flex items-center">
+                        <!-- Views carregadas via JS -->
+                    </span>
+                </div>
+                
+                <p class="font-semibold text-secondary-dark mb-2">Resumo:</p>
+                <!-- ID para manipulação via JS -->
+                <p id="video-summary" class="text-gray-700 leading-relaxed">
+                    <!-- Resumo carregado via JS -->
+                </p>
+
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <p class="font-semibold text-secondary-dark mb-2">Tags Acadêmicas:</p>
+                    <!-- ID para manipulação via JS -->
+                    <div id="video-tags" class="flex flex-wrap gap-2">
+                        <!-- Tags carregadas via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coluna Direita: Sugestões de Vídeos -->
+        <aside class="lg:w-1/3">
+            <h2 class="text-2xl font-bold text-secondary-dark mb-5 border-b pb-2">Conteúdo Sugerido</h2>
+            <div id="suggestions-list" class="space-y-4">
+                
+                <!-- Card de Sugestão 1 (Filosofia - Ética da IA) -->
+                <div data-video-id="sug1" class="suggestion-card flex items-start space-x-3 bg-white p-3 rounded-xl shadow-md hover:shadow-lg transition">
+                    <div class="w-2/5 aspect-video bg-gray-300 rounded-lg flex-shrink-0">
+                        <img src="https://placehold.co/160x90/001F3F/B8860B?text=Revolução+Digital" onerror="this.onerror=null;this.src='https://placehold.co/160x90/001F3F/B8860B?text=Placeholder';" alt="Thumbnail" class="w-full h-full object-cover rounded-lg">
+                    </div>
+                    <div class="w-3/5">
+                        <p class="text-sm font-semibold text-secondary-dark line-clamp-2">Revolução Digital: Transformação Social e Econômica</p>
+                        <p class="text-xs text-gray-500 mt-1">História & Sociedade</p>
+                        <p class="text-xs text-primary-gold font-medium">9K visualizações</p>
+                    </div>
+                </div>
+
+                <!-- Card de Sugestão 2 (Tecnologia - Python) -->
+                <div data-video-id="sug2" class="suggestion-card flex items-start space-x-3 bg-white p-3 rounded-xl shadow-md hover:shadow-lg transition">
+                    <div class="w-2/5 aspect-video bg-gray-300 rounded-lg flex-shrink-0">
+                        <img src="https://placehold.co/160x90/B8860B/001F3F?text=Algoritmos+Básico" onerror="this.onerror=null;this.src='https://placehold.co/160x90/B8860B/001F3F?text=Placeholder';" alt="Thumbnail" class="w-full h-full object-cover rounded-lg">
+                    </div>
+                    <div class="w-3/5">
+                        <p class="text-sm font-semibold text-secondary-dark line-clamp-2">Introdução: O que é e Como Funciona um Algoritmo</p>
+                        <p class="text-xs text-gray-500 mt-1">Fundamentos da Programação</p>
+                        <p class="text-xs text-primary-gold font-medium">15K visualizações</p>
+                    </div>
+                </div>
+                
+                <!-- Card de Sugestão 3 (Direito - Constitucional) -->
+                <div data-video-id="sug3" class="suggestion-card flex items-start space-x-3 bg-white p-3 rounded-xl shadow-md hover:shadow-lg transition">
+                    <div class="w-2/5 aspect-video bg-gray-300 rounded-lg flex-shrink-0">
+                        <img src="https://placehold.co/160x90/001F3F/B8860B?text=Água+e+Crise" onerror="this.onerror=null;this.src='https://placehold.co/160x90/001F3F/B8860B?text=Placeholder';" alt="Thumbnail" class="w-full h-full object-cover rounded-lg">
+                    </div>
+                    <div class="w-3/5">
+                        <p class="text-sm font-semibold text-secondary-dark line-clamp-2">Geopolítica da Água: A Crise Hídrica Global</p>
+                        <p class="text-xs text-gray-500 mt-1">Geografia & Relações Internacionais</p>
+                        <p class="text-xs text-primary-gold font-medium">7K visualizações</p>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- RODAPÉ (Footer) -->
+    <footer class="mt-12 py-8 bg-secondary-dark text-white">
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0 text-center md:text-left">
+                <p class="font-bold text-lg text-primary-gold mb-1">ScholarTube</p>
+                <p class="text-sm text-gray-400">Conteúdo Acadêmico | Educação de Qualidade</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="#" class="hover:text-primary-gold transition">Sobre</a>
+                <a href="#" class="hover:text-primary-gold transition">Termos de Uso</a>
+                <a href="#" class="hover:text-primary-gold transition">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- DADOS MOCKADOS COM LINKS DIRETOS PARA VÍDEOS (HTML5) ---
+        // NOTA: Em um ambiente real, você substituiria 'videoSrc' pelo link 
+        // direto do seu arquivo de vídeo hospedado (ex: https://meuservidor.com/video.mp4).
+        const MOCK_VIDEOS = {
+            'main': {
+                // TÍTULO ATUALIZADO
+                title: 'A Vida Secreta dos Pequenos Habitantes da Floresta', 
+                // CANAL ATUALIZADO
+                channel: 'Mundo Selvagem Kids',
+                subscribers: '350K',
+                views: '12.450',
+                date: '20/10/2024',
+                // RESUMO ATUALIZADO
+                summary: 'Uma jornada mágica para descobrir a rotina, os hábitos e os sons dos pequenos animais que chamam a floresta de lar. Perfeito para crianças e educadores, terminando com uma canção de ninar da natureza.',
+                // TAGS ADICIONADAS
+                tags: ['Fauna', 'Ecologia', 'Infantil', 'Natureza', 'Animais'],
+                // Mantemos o mesmo vídeo de demonstração
+                videoSrc: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' 
+            },
+            'sug1': {
+                title: 'Revolução Digital: Transformação Social e Econômica',
+                channel: 'História & Sociedade',
+                subscribers: '50K',
+                views: '9K',
+                date: '10/10/2024',
+                summary: 'Análise do impacto da internet e das mídias digitais nas estruturas sociais, políticas e econômicas do século XXI. Excelente para complementar estudos em Sociologia e Economia.',
+                tags: ['História', 'Sociologia', 'Economia', 'Internet'],
+                videoSrc: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' 
+            },
+            'sug2': {
+                title: 'Introdução: O que é e Como Funciona um Algoritmo',
+                channel: 'Fundamentos da Programação',
+                subscribers: '110K',
+                views: '15K',
+                date: '15/10/2024',
+                summary: 'Desmistificando o conceito de algoritmo com exemplos simples e práticos. Entenda a lógica por trás de qualquer software.',
+                tags: ['Programação', 'Algoritmos', 'Lógica', 'Tecnologia'],
+                videoSrc: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' 
+            },
+            'sug3': {
+                title: 'Geopolítica da Água: A Crise Hídrica Global',
+                channel: 'Geografia & Relações Internacionais',
+                subscribers: '75K',
+                views: '7K',
+                date: '18/10/2024',
+                summary: 'Estudo sobre a escassez de água potável como fator de tensão internacional e o futuro dos recursos hídricos no planeta.',
+                tags: ['Geopolítica', 'Crise Hídrica', 'Direito Ambiental', 'Internacional'],
+                videoSrc: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+            }
+        };
+
+        // --- Variáveis Globais e Elementos DOM ---
+        const subscribeBtn = document.getElementById('subscribe-btn');
+        let isSubscribed = false;
+
+        // Agora 'videoPlayer' é o elemento <video>
+        const videoPlayer = document.getElementById('video-player');
+        const videoTitle = document.getElementById('video-title');
+        const channelInitial = document.getElementById('channel-initial');
+        const channelName = document.getElementById('channel-name');
+        const channelSubscribers = document.getElementById('channel-subscribers');
+        const videoDate = document.getElementById('video-date');
+        const videoViews = document.getElementById('video-views');
+        const videoSummary = document.getElementById('video-summary');
+        const videoTags = document.getElementById('video-tags');
+
+        // --- LÓGICA DE INSCRIÇÃO ---
+
+        function updateSubscriptionButton() {
+            if (isSubscribed) {
+                subscribeBtn.textContent = 'Inscrito';
+                subscribeBtn.classList.remove('bg-primary-gold', 'hover:bg-yellow-600', 'text-secondary-dark');
+                subscribeBtn.classList.add('bg-gray-400', 'hover:bg-gray-500', 'text-white');
+            } else {
+                subscribeBtn.textContent = 'Inscrever-se';
+                subscribeBtn.classList.remove('bg-gray-400', 'hover:bg-gray-500', 'text-white');
+                subscribeBtn.classList.add('bg-primary-gold', 'hover:bg-yellow-600', 'text-secondary-dark');
+            }
+        }
+
+        subscribeBtn.addEventListener('click', () => {
+            isSubscribed = !isSubscribed;
+            updateSubscriptionButton();
+            console.log(isSubscribed ? 'Inscrição realizada!' : 'Inscrição cancelada.');
+        });
+
+
+        // --- LÓGICA DE CARREGAMENTO DE VÍDEO ---
+
+        /**
+         * Atualiza o player (agora <video>) e os metadados com base no ID do vídeo.
+         * @param {string} videoId - O ID da chave no objeto MOCK_VIDEOS.
+         */
+        function loadVideo(videoId) {
+            const video = MOCK_VIDEOS[videoId];
+            if (!video) {
+                console.error("Vídeo não encontrado:", videoId);
+                return;
+            }
+
+            // 1. Atualiza Player e Título
+            // ESSENCIAL: Configura o link direto do arquivo de vídeo no atributo 'src'
+            videoPlayer.src = video.videoSrc; 
+            videoPlayer.play(); // Tenta iniciar a reprodução (pode ser bloqueada pelo navegador sem interação do usuário)
+            videoTitle.textContent = video.title;
+
+            // 2. Atualiza Info do Canal
+            const initials = video.channel.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+            channelInitial.textContent = initials;
+            channelName.textContent = video.channel;
+            channelSubscribers.textContent = `${video.subscribers} Inscritos`;
+
+            // 3. Atualiza Metadados e Resumo
+            videoDate.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days mr-1"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                Publicado: ${video.date}
+            `;
+            videoViews.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye mr-1"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                Visualizações: ${video.views}
+            `;
+            videoSummary.textContent = video.summary;
+
+            // 4. Atualiza Tags
+            // Garantimos que as tags existem antes de tentar mapeá-las
+            if (video.tags && Array.isArray(video.tags)) {
+                videoTags.innerHTML = video.tags.map(tag => 
+                    `<span class="bg-indigo-100 text-indigo-700 text-sm font-medium px-3 py-1 rounded-full">#${tag}</span>`
+                ).join('');
+            } else {
+                videoTags.innerHTML = '';
+            }
+            
+            // 5. Simulação: Zera o estado de inscrição (novo canal/vídeo)
+            isSubscribed = false;
+            updateSubscriptionButton();
+
+            // Rola para o topo para focar no novo player
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+
+        // --- INICIALIZAÇÃO GERAL ---
+
+        window.onload = function() {
+            lucide.createIcons();
+            
+            // Carrega o vídeo principal na abertura da página
+            loadVideo('main'); 
+
+            // Adiciona o listener para os cards de sugestão
+            document.querySelectorAll('.suggestion-card').forEach((card) => {
+                card.addEventListener('click', () => {
+                    const videoId = card.getAttribute('data-video-id');
+                    loadVideo(videoId);
+                });
+            });
+        };
+    </script>
+
+</body>
+</html>

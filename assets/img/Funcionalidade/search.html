@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca de Artigos - ScholarTube</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        /* CSS Customizado para o tema ScholarTube */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F9FB; /* Fundo suave */
+        }
+
+        /* Cores Temáticas */
+        .bg-primary-gold { background-color: #B8860B; }
+        .text-primary-gold { color: #B8860B; }
+        .border-primary-gold { border-color: #B8860B; }
+        .bg-secondary-dark { background-color: #001F3F; }
+        .text-secondary-dark { color: #001F3F; }
+        
+        /* Estilos da barra de pesquisa */
+        #search-input {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 31, 63, 0.05), 0 2px 4px -2px rgba(0, 31, 63, 0.02);
+        }
+        #search-input:focus {
+            /* Foco com sombra dourada */
+            box-shadow: 0 10px 15px -3px rgba(184, 134, 11, 0.2), 0 4px 6px -4px rgba(184, 134, 11, 0.1);
+            border-color: #B8860B;
+        }
+        
+        /* Estilos customizados para o botão de tag */
+        .tag-button {
+            transition: all 0.2s;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.75rem;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            color: #4b5563; /* text-gray-700 */
+            border-radius: 9999px; /* rounded-full */
+            font-weight: 500; /* font-medium */
+        }
+
+        .tag-button.selected {
+            background-color: #B8860B; /* Dourado */
+            color: #001F3F; /* Azul Escuro (Para contraste) */
+            border-color: #B8860B;
+            box-shadow: 0 4px 6px -1px rgba(184, 134, 11, 0.3);
+        }
+        .tag-button:not(.selected):hover {
+            background-color: #e5e7eb; /* gray-200 */
+        }
+
+        /* Estilos responsivos adicionais para a lista de resultados */
+        @media (min-width: 768px) {
+            .article-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (min-width: 1024px) {
+            .article-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        /* Oculta o ícone de busca dentro do input quando o botão Pesquisar for visível (Desktop/Tablet) */
+        .search-icon-container {
+            display: none;
+        }
+        @media (max-width: 640px) {
+            /* Mantém o ícone em telas pequenas, onde o botão pode não caber bem */
+            .search-icon-container {
+                display: block;
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #9ca3af; /* gray-400 */
+            }
+            #search-input {
+                padding-left: 3rem; /* Espaço para o ícone */
+            }
+            #search-button {
+                display: none; /* Oculta o botão em telas pequenas */
+            }
+        }
+        @media (min-width: 641px) {
+             #search-input {
+                /* Remove o padding extra para o ícone, pois o botão Pesquisar assumirá a função visual */
+                padding-left: 1.5rem;
+                padding-right: 8rem; /* Espaço para o botão */
+            }
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-gold': '#B8860B',
+                        'secondary-dark': '#001F3F',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen">
+
+    <!-- CABEÇALHO (Header) -->
+    <header class="bg-secondary-dark text-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto py-2 px-4 flex justify-between items-center">
+            
+            <!-- Logo ScholarTube -->
+            <a href="index.html" class="text-xl font-bold flex items-center">
+                <span class="text-primary-gold mr-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-graduation-cap"><path d="M21.43 11v6a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-6"/><path d="M15.5 11.5L12 14L8.5 11.5L12 9L15.5 11.5Z"/><path d="M12 4L4 8L12 12L20 8L12 4Z"/></svg>
+                </span>
+                ScholarTube
+            </a>
+
+            
+            <!-- Navegação -->
+            <nav class="flex items-center space-x-3 text-sm">
+                <a href="index.html" class="text-gray-300 hover:text-primary-gold font-medium">Home</a>
+                <a href="#" class="text-primary-gold font-bold mx-2">Buscar</a>
+                <a href="watch.html" class="text-gray-300 hover:text-primary-gold font-medium">Meu Canal</a>
+            </nav>
+        </div>
+    </header>
+
+    
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <h2 class="text-3xl font-extrabold text-secondary-dark mb-6 border-b-4 border-primary-gold inline-block pb-1">
+            Encontre o que Procura
+        </h2>
+
+        <!-- 1. Barra de Busca e Botão de Pesquisa -->
+        <div class="mb-8">
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="Pesquisar por tema, autor ou canal..."
+                        class="w-full p-4 border border-gray-300 rounded-xl text-lg focus:ring-primary-gold focus:border-primary-gold">
+                
+                <!-- Ícone de Busca (Visível apenas em Mobile) -->
+                <span class="search-icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </span>
+
+                <!-- Botão de Pesquisa -->
+                <button id="search-button"
+                        class="absolute right-0 top-0 h-full px-6 bg-primary-gold text-secondary-dark font-bold text-lg rounded-r-xl
+                                transition hover:bg-yellow-600 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary-gold/50">
+                    Pesquisar
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Filtro por Tags -->
+        <div class="mb-8 p-4 bg-white rounded-xl shadow-md">
+            <h3 class="text-xl font-semibold text-secondary-dark mb-4">Filtrar por Tags / Disciplinas:</h3>
+            <div id="tags-container" class="flex flex-wrap gap-2">
+                <!-- Tags dinâmicas carregadas pelo JS -->
+            </div>
+        </div>
+
+        <!-- 3. Listagem de Resultados -->
+        <section>
+            <h3 class="text-2xl font-bold text-secondary-dark mb-5 border-b pb-2">Resultados Mais Recentes</h3>
+            <div id="results-list" class="grid grid-cols-1 article-grid gap-6">
+                <!-- Os artigos (vídeos) serão carregados aqui -->
+            </div>
+            <!-- Mensagem de Sem Resultados -->
+            <div id="no-results" class="text-center text-gray-500 mt-10 p-6 bg-white rounded-lg shadow-inner hidden">
+                <p class="text-xl font-medium">Nenhum vídeo encontrado com os filtros aplicados.</p>
+                <p>Tente ajustar o texto da busca ou remover algumas tags.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- RODAPÉ (Footer) -->
+    <footer class="mt-12 py-8 bg-secondary-dark text-white">
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="mb-4 md:mb-0 text-center md:text-left">
+                <p class="font-bold text-lg text-primary-gold mb-1">ScholarTube</p>
+                <p class="text-sm text-gray-400">Conteúdo Acadêmico | Educação de Qualidade</p>
+            </div>
+            <div class="flex space-x-6 text-sm">
+                <a href="#" class="hover:text-primary-gold transition">Sobre</a>
+                <a href="#" class="hover:text-primary-gold transition">Termos de Uso</a>
+                <a href="#" class="hover:text-primary-gold transition">Contato</a>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- LÓGICA DE INTERATIVIDADE: Filtro por Tags e Texto ---
+
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const tagsContainer = document.getElementById('tags-container');
+        const resultsList = document.getElementById('results-list');
+        const noResultsMessage = document.getElementById('no-results');
+        let selectedTags = new Set();
+        
+        // --- DADOS MOCKADOS (Simulação de vídeos com URLs reais do YouTube) ---
+        const articles = [
+            { id: 1, title: 'Revolução Industrial 4.0: Impactos', author: 'Engenharia Today', tags: ['engenharia', 'tecnologia', 'sociedade'], date: '2024-10-20', videoUrl: 'https://www.youtube.com/watch?v=yKA9RCQj5sA' },
+            { id: 2, title: 'Introdução ao Direito Constitucional', author: 'Jurídico Essencial', tags: ['direito', 'humanas', 'leis'], date: '2024-10-18', videoUrl: 'https://www.youtube.com/watch?v=6HZzuqLOMSY' },
+            { id: 3, title: 'Otimização de Algoritmos com Python', author: 'Code Scholars', tags: ['tecnologia', 'programação', 'python'], date: '2024-10-15', videoUrl: 'https://www.youtube.com/watch?v=94yM9-H7s7Q' },
+            { id: 4, title: 'A Escola de Frankfurt e a Teoria Crítica', author: 'Filosofia Profunda', tags: ['humanas', 'filosofia', 'sociedade'], date: '2024-10-10', videoUrl: 'https://www.youtube.com/watch?v=4nkQcnRLd90' },
+            { id: 5, title: 'Cálculo Avançado I: Integrais', author: 'Matemática Experts', tags: ['exatas', 'matemática', 'cálculo'], date: '2024-10-05', videoUrl: 'https://www.youtube.com/watch?v=vy9bWYmiD7I' },
+            { id: 6, title: 'Mecânica dos Fluidos: Princípios', author: 'Engenharia Today', tags: ['engenharia', 'exatas', 'física'], date: '2024-10-01', videoUrl: 'https://www.youtube.com/watch?v=_9VXkn_8gyI' },
+            { id: 7, title: 'A Crise Hídrica Global', author: 'Geografia Atual', tags: ['geografia', 'ciências', 'meio ambiente'], date: '2024-09-28', videoUrl: 'https://www.youtube.com/watch?v=HM1clgeywqM' },
+            { id: 8, title: 'Design Thinking para Pesquisadores', author: 'Metodologia Ágil', tags: ['design', 'metodologia', 'pesquisa'], date: '2024-09-25', videoUrl: 'https://www.youtube.com/watch?v=TLAX0YWXzkA' },
+        ];
+
+        // Coleta todas as tags únicas
+        const allTags = [...new Set(articles.flatMap(article => article.tags))].sort();
+
+        // Cria o elemento visual de um card de vídeo
+        function renderArticleCard(article) {
+            const tagsHtml = article.tags
+                .map(tag => `<span class="inline-block bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded-full">${tag.charAt(0).toUpperCase() + tag.slice(1)}</span>`)
+                .join(' ');
+
+            const card = document.createElement('div');
+            card.className = 'article-card bg-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.01] transition duration-300 overflow-hidden cursor-pointer';
+            card.setAttribute('data-url', article.videoUrl); // Armazena a URL no card
+
+            card.innerHTML = `
+                <div class="p-6">
+                    <h4 class="text-xl font-bold text-secondary-dark mb-2">${article.title}</h4>
+                    <p class="text-sm text-primary-gold font-medium mb-3">Canal: ${article.author}</p>
+                    <p class="text-sm text-gray-500 mb-4">Publicado em: ${new Date(article.date).toLocaleDateString('pt-BR')}</p>
+                    <div class="flex flex-wrap gap-2 mb-4">${tagsHtml}</div>
+                    <!-- Link explícito que também abre em nova aba -->
+                    <a href="${article.videoUrl}" target="_blank" class="text-primary-gold hover:text-secondary-dark font-semibold text-sm transition">Assistir Vídeo &rarr;</a>
+                </div>
+            `;
+            
+            // Adiciona o listener de clique no card inteiro
+            card.addEventListener('click', (e) => {
+                // Se o clique não foi no link explícito, abre o vídeo
+                if (e.target.tagName !== 'A') {
+                   window.open(article.videoUrl, '_blank');
+                }
+            });
+            return card;
+        }
+
+        // Função para renderizar a lista de resultados
+        function renderResults(filteredArticles) {
+            resultsList.innerHTML = '';
+            
+            if (filteredArticles.length === 0) {
+                noResultsMessage.classList.remove('hidden');
+            } else {
+                noResultsMessage.classList.add('hidden');
+                filteredArticles.forEach(article => {
+                    resultsList.appendChild(renderArticleCard(article));
+                });
+            }
+        }
+
+        // Função para renderizar os botões de tag
+        function renderTags() {
+            tagsContainer.innerHTML = '';
+            allTags.forEach(tag => {
+                const button = document.createElement('button');
+                button.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+                button.setAttribute('data-tag', tag);
+                button.className = 'tag-button';
+                if (selectedTags.has(tag)) {
+                    button.classList.add('selected');
+                }
+                
+                // O filtro de tags tem um listener de clique que chama handleTagClick
+                button.addEventListener('click', () => handleTagClick(tag, button));
+                tagsContainer.appendChild(button);
+            });
+        }
+
+        // Função principal de filtragem que combina tags e texto
+        function filterArticles() {
+            const searchText = searchInput.value.toLowerCase().trim();
+            
+            const filtered = articles.filter(article => {
+                // Filtro por Tags (seleção dos botões):
+                const matchesTags = selectedTags.size === 0 ||
+                                     article.tags.some(tag => selectedTags.has(tag));
+
+                // Filtro por Texto: Procura em título, autor E também nas tags do artigo.
+                const matchesText = article.title.toLowerCase().includes(searchText) ||
+                                     article.author.toLowerCase().includes(searchText) ||
+                                     article.tags.some(tag => tag.includes(searchText));
+
+                // O artigo deve passar nos DOIS filtros (Tags E Texto)
+                return matchesTags && matchesText;
+            });
+
+            // Ordena por data mais recente
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            renderResults(filtered);
+        }
+
+        // Handler de clique nas tags (muda o estado e filtra)
+        function handleTagClick(tag, button) {
+            if (selectedTags.has(tag)) {
+                selectedTags.delete(tag);
+                button.classList.remove('selected');
+            } else {
+                selectedTags.add(tag);
+                button.classList.add('selected');
+            }
+            
+            // O filtro por tags SEMPRE funciona em tempo real.
+            filterArticles();
+        }
+
+        // --- INICIALIZAÇÃO E EVENT LISTENERS ---
+        
+        // 1. O clique no botão AGORA dispara a pesquisa de texto/tag
+        searchButton.addEventListener('click', filterArticles);
+        
+        // 2. Adiciona suporte a "Enter" no campo de busca para disparar a pesquisa de texto/tag
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                filterArticles();
+            }
+        });
+        
+        function initSearchPage() {
+            renderTags();
+            filterArticles(); // Carrega todos os resultados na inicialização
+            lucide.createIcons();
+        }
+
+        window.onload = initSearchPage;
+    </script>
+
+</body>
+</html>
